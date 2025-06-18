@@ -1,0 +1,54 @@
+{
+  "title": "multiplicaciones",
+  "source": "multiplicaciones",
+
+  "misc": {
+    "alias": "multiplicaciones",
+    "languages": "none",
+    "visibility": 1,
+    "email_clarifications": 0,
+    "admins": ["alanboy"]
+  },
+
+  "validator": {
+    "name": "token-caseless",
+    "limits": {
+      "TimeLimit": 1000
+    }
+  },
+
+  "Cases": [
+    {
+      "Cases": [
+        {
+          "Name": "sin_grupo.1",
+          "Weight": 33.333333333333336
+        },
+        {
+          "Name": "sin_grupo.2",
+          "Weight": 33.333333333333336
+        },
+        {
+          "Name": "sin_grupo.3",
+          "Weight": 33.333333333333336
+        }
+      ],
+      "Name": "sin_grupo"
+    }
+  ],
+  "limits": {
+    "ExtraWallTime": 0,
+    "MemoryLimit": 33554432,
+    "OutputLimit": 10240,
+    "OverallWallTimeLimit": 23423,
+    "TimeLimit": 1000,
+    "InputLimit": 32768
+  },
+
+  "Slow": false,
+  "Validator": {
+    "Name": "token",
+    "Tolerance": 1e-9,
+    "GroupScorePolicy": "sum-if-not-zero"
+  }
+}
