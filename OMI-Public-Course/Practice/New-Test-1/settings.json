@@ -1,13 +1,13 @@
 {
-  "title": "multiplicaciones",
+  "title": "New-Test-1",
   "source": "multiplicaciones",
 
   "misc": {
-    "alias": "multiplicaciones",
+    "alias": "new-test-1",
     "languages": "none",
     "visibility": 1,
     "email_clarifications": 0,
-    "admins": ["alanboy"]
+    "admins": ["iqbalcodes6602"]
   },
 
   "validator": {
