@@ -1,6 +1,6 @@
 # Contest Start
 
-new test problem addition
+new test problem addition. update 1
 
 # Input
 The first line contains a single integer k (1≤k≤1000) — the number of test cases.
