@@ -6,8 +6,7 @@
     "alias": "new-test-1",
     "languages": "none",
     "visibility": 1,
-    "email_clarifications": 0,
-    "admins": ["iqbalcodes6602"]
+    "email_clarifications": 0
   },
 
   "validator": {
