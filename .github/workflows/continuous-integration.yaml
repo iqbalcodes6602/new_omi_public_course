@@ -18,6 +18,14 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.ref != 'sync-course'
     runs-on: ubuntu-22.04
     steps:
+    - name: Cancel if merged from sync-course
+      if: github.ref == 'refs/heads/main'
+      run: |
+        if git log -1 --merges --pretty=%B | grep -q 'sync-course'; then
+          echo "Merged from sync-course. Skipping workflow."
+          exit 0
+        fi
+
     - name: Set base commit (pull request)
       run: |
         echo "GITHUB_BASE_COMMIT=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
