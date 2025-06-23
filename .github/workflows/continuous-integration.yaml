@@ -78,9 +78,9 @@ jobs:
     # - name: Run tests
     #   run: python3 ./utils/runtests.py ${{ env.CI_FLAGS }}
 
-    # - name: Generate pngs/testplan
-    #   run: python3 ./utils/generateresources.py --generate=png,testplan ${{ env.CI_FLAGS }}
-    #   if: github.ref == 'refs/heads/main'
+    - name: Generate pngs/testplan
+      run: python3 ./utils/generateresources.py --generate=png,testplan ${{ env.CI_FLAGS }}
+      if: github.ref == 'refs/heads/main'
 
     - name: Deploy to omegaUp
       run: pipenv run python3 ./utils/upload.py --ci --verbose  # Don't use CI_FLAGS to avoid deploying all problems.
