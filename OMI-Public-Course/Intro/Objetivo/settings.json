@@ -20,5 +20,12 @@
     "limits": {
       "TimeLimit": 1000
     }
+  },
+  "misc": {
+    "alias": "demo-de-objetivo",
+    "visibility": 1,
+    "languages": "none",
+    "email_clarifications": 0,
+    "admin-groups": ["Workshop-2017"]
   }
 }
