@@ -1,23 +1,26 @@
 {
   "title": "Demo de Objetivo",
   "source": "Curso OMI",
-
-  "limits": {
-    "TimeLimit": 1000,
+  "Cases": [],
+  "Limits": {
+    "ExtraWallTime": "0s",
     "MemoryLimit": 32768,
-    "InputLimit": 32768,
     "OutputLimit": 32768,
-    "ExtraWallTime": 0,
-    "OverallWallTimeLimit": 60000
+    "OverallWallTimeLimit": "1m0s",
+    "TimeLimit": "1s"
   },
-
+  "Slow": false,
+  "Validator": {
+    "Name": "token-caseless",
+    "Tolerance": 1e-9,
+    "GroupScorePolicy": "sum-if-not-zero"
+  },
   "validator": {
     "name": "token-caseless",
     "limits": {
       "TimeLimit": 1000
     }
   },
-
   "misc": {
     "alias": "demo-de-objetivo",
     "visibility": 1,
