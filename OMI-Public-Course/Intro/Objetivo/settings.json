@@ -14,5 +14,11 @@
     "Name": "token-caseless",
     "Tolerance": 1e-9,
     "GroupScorePolicy": "sum-if-not-zero"
+  },
+  "validator": {
+    "name": "token-caseless",
+    "limits": {
+      "TimeLimit": 1000
+    }
   }
 }
