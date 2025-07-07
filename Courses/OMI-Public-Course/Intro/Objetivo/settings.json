@@ -3,7 +3,7 @@
   "source": "Curso OMI",
   "Cases": [],
   "Limits": {
-    "ExtraWallTime": "0s",
+    "ExtraWallTime": "0",
     "MemoryLimit": 32768,
     "OutputLimit": 32768,
     "OverallWallTimeLimit": "1m0s",
