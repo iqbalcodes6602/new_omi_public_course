@@ -1,9 +1,10 @@
 name: Sync Course Content on PR
 
 on:
+  push:
+    branches: [sync-course]
   pull_request:
     branches: [sync-course]
-    types: [opened, synchronize]
 
 jobs:
   sync-content:
