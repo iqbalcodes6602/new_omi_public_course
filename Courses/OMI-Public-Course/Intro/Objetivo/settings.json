@@ -3,11 +3,12 @@
   "source": "Curso OMI",
   "Cases": [],
   "Limits": {
-    "ExtraWallTime": "0s",
-    "MemoryLimit": 32768,
-    "OutputLimit": 32768,
-    "OverallWallTimeLimit": "1m0s",
-    "TimeLimit": "1s"
+    "ExtraWallTime": 0,
+    "MemoryLimit": 33554432,
+    "OutputLimit": 10240,
+    "OverallWallTimeLimit": 23423,
+    "TimeLimit": 1000,
+    "InputLimit": 32768
   },
   "Slow": false,
   "Validator": {
