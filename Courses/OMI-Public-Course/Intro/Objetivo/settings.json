@@ -7,7 +7,8 @@
     "MemoryLimit": 32768,
     "OutputLimit": 32768,
     "OverallWallTimeLimit": "1m0s",
-    "TimeLimit": "1s"
+    "TimeLimit": "1s",
+    "InputLimit": 32768
   },
   "Slow": false,
   "Validator": {
