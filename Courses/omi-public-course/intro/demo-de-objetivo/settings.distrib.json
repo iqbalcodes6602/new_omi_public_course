@@ -2,9 +2,9 @@
   "cases": {},
   "limits": {
     "ExtraWallTime": "0s",
-    "MemoryLimit": 33554432,
-    "OutputLimit": 10240,
-    "OverallWallTimeLimit": "23.423s",
+    "MemoryLimit": 32768,
+    "OutputLimit": 32768,
+    "OverallWallTimeLimit": "1m0s",
     "TimeLimit": "1s"
   },
   "validator": {
