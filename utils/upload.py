@@ -168,7 +168,7 @@ def uploadProblemZip(client: omegaup.api.Client,
     if targetAdmins or targetAdminGroups:
         allAdmins = client.problem.admins(problem_alias=alias)
 
-    if targetAdmins is not None:
+    if targetAdmins is not None and allAdmins:
         admins = {
             a['username'].lower()
             for a in allAdmins['admins'] if a['role'] == 'admin'
