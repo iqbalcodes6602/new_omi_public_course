@@ -192,7 +192,7 @@ def uploadProblemZip(client: omegaup.api.Client,
             client.problem.removeAdmin(problem_alias=alias,
                                        usernameOrEmail=admin)
 
-    if targetAdminGroups is not None:
+    if targetAdminGroups and allAdmins:
         adminGroups = {
             a['alias'].lower()
             for a in allAdmins['group_admins'] if a['role'] == 'admin'
