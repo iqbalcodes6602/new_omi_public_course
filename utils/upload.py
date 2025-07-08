@@ -35,7 +35,7 @@ def createProblemZip(problemConfig: Mapping[str, Any], problemPath: str,
         if os.path.isfile(testplan):
             _addFile(testplan)
 
-        if problemConfig['validator']['name'] == 'custom':
+        if problemConfig['Validator']['Name'] == 'custom':
             validators = [
                 x for x in os.listdir(problemPath) if x.startswith('validator')
             ]
