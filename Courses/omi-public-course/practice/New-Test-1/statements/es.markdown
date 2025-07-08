@@ -1,11 +1,11 @@
 # Contest Start
 
-new test problem addition. update 1
+new test problem addition. update 2
 
 # Input
 The first line contains a single integer k (1≤k≤1000) — the number of test cases.
 
-Each of the next k lines contains three integers n, x, t (1≤n,x,t≤2⋅109) — the number of participants, the start interval and the contest duration.
+Each of the next k lines contains three integers n, x, t (1≤n,x,t≤2⋅109) — the number of participants, the start interval and the contest duration. 
 
 # Output
 Print k lines, in the i-th line print the total dissatisfaction of participants in the i-th test case.
