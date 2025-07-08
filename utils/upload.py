@@ -6,6 +6,7 @@ import os
 import subprocess
 import tempfile
 import zipfile
+import re
 
 from typing import Any, Mapping, Set
 
@@ -34,7 +35,7 @@ def createProblemZip(problemConfig: Mapping[str, Any], problemPath: str,
         if os.path.isfile(testplan):
             _addFile(testplan)
 
-        if problemConfig['validator']['name'] == 'custom':
+        if problemConfig['Validator']['Name'] == 'custom':
             validators = [
                 x for x in os.listdir(problemPath) if x.startswith('validator')
             ]
@@ -61,30 +62,66 @@ def uploadProblemZip(client: omegaup.api.Client,
                      problemConfig: Mapping[str, Any], canCreate: bool,
                      zipPath: str, commitMessage: str) -> None:
     """Uploads a problem with the given .zip and configuration."""
-    misc = problemConfig['misc']
-    alias = misc['alias']
-    limits = problemConfig['Limits']
-    validator = problemConfig['validator']
+    misc = problemConfig.get('misc', {})
+    alias = problemConfig.get('alias', "")
+    limits = problemConfig.get('Limits', {})
+    validator = problemConfig.get('Validator', {})
 
     payload = {
         'message': commitMessage,
         'problem_alias': alias,
-        'title': problemConfig['title'],
-        'source': problemConfig['source'],
-        'visibility': misc['visibility'],
-        'languages': misc['languages'],
-        'time_limit': limits['TimeLimit'],
-        'memory_limit': limits['MemoryLimit'] // 1024,
-        'input_limit': limits['InputLimit'],
-        'output_limit': limits['OutputLimit'],
-        'extra_wall_time': limits['ExtraWallTime'],
-        'overall_wall_time_limit': limits['OverallWallTimeLimit'],
-        'validator': validator['name'],
-        'validator_time_limit': validator['limits']['TimeLimit'],
-        'email_clarifications': misc['email_clarifications'],
-        'group_score_policy': misc.get('group_score_policy',
-                                       'sum-if-not-zero'),
+        # 'title': problemConfig['title'],
+        # 'source': problemConfig['source'],
+        # 'visibility': misc['visibility'],
+        # 'languages': misc['languages'],
+        # 'time_limit': limits['TimeLimit'],
+        # 'memory_limit': limits['MemoryLimit'] // 1024,
+        # 'input_limit': limits['InputLimit'],
+        # 'output_limit': limits['OutputLimit'],
+        # 'extra_wall_time': limits['ExtraWallTime'],
+        # 'overall_wall_time_limit': limits['OverallWallTimeLimit'],
+        # 'validator': validator['name'],
+        # 'validator_time_limit': validator['limits']['TimeLimit'],
+        # 'email_clarifications': misc['email_clarifications'],
+        # 'group_score_policy': misc.get('group_score_policy',
+        #                                'sum-if-not-zero'),
     }
+
+    if misc:
+        if misc['visibility'] is not None:
+            payload['visibility'] = misc['visibility']
+        if misc['languages'] is not None:
+            payload['languages'] = misc['languages']
+        if misc['email_clarifications'] is not None:
+            payload['email_clarifications'] = misc.get('email_clarifications', 0)
+        if misc['group_score_policy'] is not None:
+            payload['group_score_policy'] = misc.get('group_score_policy', 'sum-if-not-zero'),
+
+    if limits:
+        time_limit = limits.get('TimeLimit')
+        if time_limit is not None:
+            payload['time_limit'] = parse_limit_value(time_limit)
+        memory_limit = limits.get('MemoryLimit')
+        if memory_limit is not None:
+            payload['memory_limit'] = parse_limit_value(memory_limit) // 1024
+        input_limit = limits.get('InputLimit')
+        if input_limit is not None:
+            payload['input_limit'] = parse_limit_value(input_limit)
+        output_limit = limits.get('OutputLimit')
+        if output_limit is not None:
+            payload['output_limit'] = parse_limit_value(output_limit)
+        extra_wall_time = limits.get('ExtraWallTime')
+        if extra_wall_time is not None:
+            payload['extra_wall_time'] = parse_limit_value(extra_wall_time)
+        overall_wall_time = limits.get('OverallWallTimeLimit')
+        payload['overall_wall_time_limit'] = (
+            parse_limit_value(overall_wall_time) if overall_wall_time is not None else 0
+        )
+
+    if validator:
+        if validator.get('validator') is None:
+            payload['validator'] = validator.get('Name', 'default')
+
 
     exists = client.problem.details(problem_alias=alias,
                                     check_=False)['status'] == 'ok'
@@ -131,7 +168,7 @@ def uploadProblemZip(client: omegaup.api.Client,
     if targetAdmins or targetAdminGroups:
         allAdmins = client.problem.admins(problem_alias=alias)
 
-    if targetAdmins is not None:
+    if targetAdmins is not None and allAdmins:
         admins = {
             a['username'].lower()
             for a in allAdmins['admins'] if a['role'] == 'admin'
@@ -195,6 +232,20 @@ def uploadProblemZip(client: omegaup.api.Client,
             client.problem.addTag(problem_alias=alias,
                                   name=tag,
                                   public=payload.get('public', False))
+
+
+
+def parse_limit_value(value):
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value
+    if isinstance(value, str):
+        match = re.match(r'^(\d+(\.\d+)?)(s)?$', value.strip())
+        if match:
+            return float(match.group(1))
+        raise ValueError(f"Invalid limit value format: {value}")
+    raise TypeError(f"Unsupported type for limit value: {type(value)}")
 
 
 def uploadProblem(client: omegaup.api.Client, problemPath: str,
