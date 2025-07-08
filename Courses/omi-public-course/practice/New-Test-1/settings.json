@@ -1,6 +1,7 @@
 {
   "title": "New-Test-1",
   "source": "multiplicaciones",
+  "alias": "New-Test-1",
   "Cases": [
     {
       "Cases": [
