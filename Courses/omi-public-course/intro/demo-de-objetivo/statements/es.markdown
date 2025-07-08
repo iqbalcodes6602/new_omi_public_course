@@ -3,7 +3,7 @@ Objetivo
 
 hello this is a sample course to deliver a proof of concept for this year's Gsoc 2025 project Public Courses on github.
 
-I have created a repository which links this course here -
+I have created a repository which links this course here-
 https://github.com/iqbalcodes6602/omi_public_course
 
 You can submit a PR to this repository to update the changes. Once the pr is merged the changes would reflect in the course..
