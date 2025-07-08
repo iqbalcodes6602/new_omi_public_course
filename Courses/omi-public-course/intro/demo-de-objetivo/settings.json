@@ -3,30 +3,16 @@
   "source": "Curso OMI",
   "Cases": [],
   "Limits": {
-    "ExtraWallTime": 0,
+    "ExtraWallTime": "0s",
     "MemoryLimit": 33554432,
     "OutputLimit": 10240,
-    "OverallWallTimeLimit": 23423,
-    "TimeLimit": 1000,
-    "InputLimit": 32768
+    "OverallWallTimeLimit": "23.423s",
+    "TimeLimit": "1s"
   },
   "Slow": false,
   "Validator": {
     "Name": "token-caseless",
     "Tolerance": 1e-9,
     "GroupScorePolicy": "sum-if-not-zero"
-  },
-  "validator": {
-    "name": "token-caseless",
-    "limits": {
-      "TimeLimit": 1000
-    }
-  },
-  "misc": {
-    "alias": "demo-de-objetivo",
-    "visibility": 1,
-    "languages": "none",
-    "email_clarifications": 0,
-    "admin-groups": ["Workshop-2017"]
   }
 }
