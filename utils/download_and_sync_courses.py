@@ -7,9 +7,10 @@ import os
 import zipfile
 from typing import Dict, Any
 from urllib.parse import urljoin
-
+import requests
 from tqdm import tqdm
 import omegaup.api
+import shutil
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
@@ -22,7 +23,14 @@ COURSE_ALIASES = [
     "omi-public-course"
 ]
 
-BASE_COURSE_FOLDER = "Courses"
+BASE_COURSE_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Courses"))
+
+
+if os.path.exists(BASE_COURSE_FOLDER):
+    LOG.warning("Delete existing course folder to avoid conflicts")
+    shutil.rmtree(BASE_COURSE_FOLDER)
+
+
 
 
 def handle_input():
@@ -68,10 +76,13 @@ def get_assignment_details(course_alias: str, assignment_alias: str):
     })
 
 
+
 def download_and_unzip(problem_alias: str, assignment_folder: str):
     try:
         download_url = urljoin(BASE_URL, f"/api/problem/download/problem_alias/{problem_alias}/")
-        response = API_CLIENT.session.get(download_url, stream=True)
+        headers = {'Authorization': f'token {API_CLIENT.api_token}'}
+        response = requests.get(download_url, stream=True, headers=headers)
+
 
         if response.status_code == 404:
             LOG.warning(f"⚠️  Problem '{problem_alias}' not found or access denied (404).")
@@ -117,7 +128,7 @@ def download_and_unzip(problem_alias: str, assignment_folder: str):
 
 
 def main():
-    global API_CLIENT  # 👈 This is the key part
+    global API_CLIENT
     api_token = handle_input()
     API_CLIENT = omegaup.api.Client(api_token=api_token, url=BASE_URL)
 
@@ -155,7 +166,10 @@ def main():
                     for problem in tqdm(problems, desc=f"  ↳ {assignment_alias}", leave=False):
                         try:
                             download_and_unzip(problem["alias"], assignment_folder)
-                            rel_path = os.path.join(BASE_COURSE_FOLDER, course_alias, assignment_alias, sanitize_filename(problem["alias"]))
+                            rel_path = os.path.join(
+                                "Courses", course_alias, assignment_alias, sanitize_filename(problem["alias"])
+                            )
+                            LOG.info(f"📂 Added problem path: {rel_path}")
                             all_problems.append({"path": rel_path})
                         except Exception as e:
                             LOG.error(f"❌ Error while processing problem '{problem['alias']}': {e}")
@@ -167,7 +181,9 @@ def main():
             LOG.error(f"❌ Failed to process course '{course_alias}': {e}")
 
     # ✅ Write problems.json
-    with open("problems.json", "w", encoding="utf-8") as f:
+    problems_json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "problems.json"))
+    with open(problems_json_path, "w", encoding="utf-8") as f:
+        LOG.info(f"Writing problems.json to {problems_json_path}")
         json.dump({"problems": all_problems}, f, indent=2, ensure_ascii=False)
     LOG.info("📝 Created problems.json with all problem paths.")
 
