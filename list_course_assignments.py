@@ -110,6 +110,23 @@ def download_and_unzip(problem_alias: str, assignment_folder: str):
             LOG.info(f"✅ Extracted: {problem_alias} → {problem_folder}")
         except zipfile.BadZipFile:
             LOG.error(f"❌ Failed to unzip: {zip_path}")
+            return
+
+        settings_path = os.path.join(problem_folder, "settings.json")
+        if os.path.exists(settings_path):
+            try:
+                with open(settings_path, "r+", encoding="utf-8") as f:
+                    settings = json.load(f)
+                    settings["alias"] = problem_alias
+                    settings["title"] = problem_alias
+                    f.seek(0)
+                    json.dump(settings, f, indent=2, ensure_ascii=False)
+                    f.truncate()
+                LOG.info(f"🛠️  Updated settings.json with alias: {problem_alias}")
+            except Exception as e:
+                LOG.warning(f"⚠️  Failed to update settings.json for '{problem_alias}': {e}")
+        else:
+            LOG.warning(f"⚠️  No settings.json found for '{problem_alias}'")
 
     except requests.exceptions.RequestException as e:
         LOG.error(f"❌ Failed to download '{problem_alias}': {e}")

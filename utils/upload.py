@@ -235,16 +235,20 @@ def uploadProblemZip(client: omegaup.api.Client,
                                   public=payload.get('public', False))
 
 
-
 def parse_limit_value(value):
     if value is None:
         return None
     if isinstance(value, (int, float)):
-        return value
+        return int(value)
     if isinstance(value, str):
-        match = re.match(r'^(\d+(\.\d+)?)(s)?$', value.strip())
-        if match:
-            return float(match.group(1))
+        value = value.strip().lower()
+        if value.endswith("ms"):
+            return int(float(value[:-2]))
+        if value.endswith("s"):
+            return int(float(value[:-1]) * 1000)
+        if re.match(r"^\d+(\.\d+)?$", value):
+            # Assume milliseconds if no suffix
+            return int(float(value))
         raise ValueError(f"Invalid limit value format: {value}")
     raise TypeError(f"Unsupported type for limit value: {type(value)}")
 
@@ -254,7 +258,7 @@ def uploadProblem(client: omegaup.api.Client, problemPath: str,
     with open(os.path.join(problemPath, 'settings.json'), 'r') as f:
         problemConfig = json.load(f)
 
-    logging.info('Uploading problem: %s', problemConfig['title'])
+    logging.info('Uploading problem: %s', problemConfig['alias'])
 
     with tempfile.NamedTemporaryFile() as tempFile:
         createProblemZip(problemConfig, problemPath, tempFile.name)
@@ -265,7 +269,7 @@ def uploadProblem(client: omegaup.api.Client, problemPath: str,
                          tempFile.name,
                          commitMessage=commitMessage)
 
-        logging.info('Success uploading %s', problemConfig['title'])
+        logging.info('Success uploading %s', problemConfig['alias'])
 
 
 def _main() -> None:
