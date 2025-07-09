@@ -26,15 +26,14 @@ BASE_COURSE_FOLDER = "Courses"
 
 
 def handle_input():
-    global API_CLIENT, BASE_URL
-
+    global BASE_URL, API_TOKEN
     parser = argparse.ArgumentParser(description="Download and extract problems from multiple course assignments")
     parser.add_argument("--url", default="https://omegaup.com", help="omegaUp base URL")
-    parser.add_argument("--api-token", default=os.environ.get("OMEGAUP_API_TOKEN"), required=True, help="omegaUp API token")
+    parser.add_argument("--api-token", type=str, default=os.environ.get("OMEGAUP_API_TOKEN"), required=("OMEGAUP_API_TOKEN" not in os.environ))
     args = parser.parse_args()
-
     BASE_URL = args.url
-    API_CLIENT = omegaup.api.Client(api_token=args.api_token, url=BASE_URL)
+    return args.api_token
+
 
 
 def get_json(endpoint: str, params: Dict[str, str]) -> Dict[str, Any]:
@@ -118,7 +117,9 @@ def download_and_unzip(problem_alias: str, assignment_folder: str):
 
 
 def main():
-    handle_input()
+    global API_CLIENT  # 👈 This is the key part
+    api_token = handle_input()
+    API_CLIENT = omegaup.api.Client(api_token=api_token, url=BASE_URL)
 
     os.makedirs(BASE_COURSE_FOLDER, exist_ok=True)
     all_problems = []
