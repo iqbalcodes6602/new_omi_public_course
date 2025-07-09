@@ -14,7 +14,7 @@
       "submissions": 1,
       "accepted": 0,
       "quality_seal": false,
-      "input_limit": 32768,
+      "input_limit": 10240,
       "difficulty": 0,
       "order": 1,
       "languages": "",
@@ -45,7 +45,7 @@
       "submissions": 0,
       "accepted": 0,
       "quality_seal": false,
-      "input_limit": 32768,
+      "input_limit": 10240,
       "difficulty": 0,
       "order": 2,
       "languages": "",
@@ -109,5 +109,5 @@
   "problemset_id": 47620,
   "admin": true,
   "status": "ok",
-  "_id": "686d2c3bf0036047667407"
+  "_id": "686e7630d3b05368645794"
 }

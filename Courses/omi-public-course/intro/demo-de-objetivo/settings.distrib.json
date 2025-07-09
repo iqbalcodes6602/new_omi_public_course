@@ -4,8 +4,8 @@
     "ExtraWallTime": "0s",
     "MemoryLimit": 33554432,
     "OutputLimit": 10240,
-    "OverallWallTimeLimit": "23.423s",
-    "TimeLimit": "1s"
+    "OverallWallTimeLimit": "23ms",
+    "TimeLimit": "1ms"
   },
   "validator": {
     "name": "token-caseless",
