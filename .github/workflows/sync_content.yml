@@ -1,3 +1,54 @@
+# name: Sync Course Content on PR
+
+# on:
+#   push:
+#     branches: [sync-course]
+#   pull_request:
+#     branches: [sync-course]
+
+# jobs:
+#   sync-content:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#     - name: Checkout repository with PR branch
+#       uses: actions/checkout@v4
+#       with:
+#         ref: ${{ github.head_ref }}  # Checkout the PR branch specifically
+#         fetch-depth: 0
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v4
+#       with:
+#         python-version: '3.x'
+
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+#     - name: Run download script
+#       run: python list_course_assignments.py
+
+#     - name: Commit and push changes
+#       id: commit
+#       run: |
+#         git config --global user.name "github-actions"
+#         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+#         git add .
+#         # Only commit if there are changes
+#         if git diff --staged --quiet; then
+#           echo "No changes to commit"
+#         else
+#           git commit -m "Automated update: Downloaded latest content"
+#           git push
+#         fi
+
+
+
+
+
+
 name: Sync Course Content on PR
 
 on:
@@ -6,29 +57,39 @@ on:
   pull_request:
     branches: [sync-course]
 
+env:
+  OMEGAUP_API_TOKEN: ${{ secrets.OMEGAUP_API_TOKEN }}
+  GIT_USERNAME: ${{ github.actor }}
+
 jobs:
   sync-content:
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-22.04
+
     steps:
     - name: Checkout repository with PR branch
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.head_ref }}  # Checkout the PR branch specifically
+        ref: ${{ github.head_ref }}
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.x'
+        python-version: '3.8'
 
-    - name: Install dependencies
+    - name: Set up pipenv
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pipenv==2023.11.15
 
-    - name: Run download script
-      run: python list_course_assignments.py
+    - name: Install Python dependencies with pipenv
+      run: |
+        cd utils
+        pipenv install
+
+    - name: Run course download script
+      working-directory: utils
+      run: pipenv run python3 download_and_sync_courses.py
 
     - name: Commit and push changes
       id: commit
@@ -40,6 +101,6 @@ jobs:
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Automated update: Downloaded latest content"
+          git commit -m "📝 Auto-sync: Downloaded latest OmegaUp content"
           git push
         fi
