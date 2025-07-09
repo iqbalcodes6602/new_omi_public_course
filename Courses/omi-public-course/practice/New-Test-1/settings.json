@@ -35,5 +35,6 @@
     "Tolerance": 1e-09,
     "GroupScorePolicy": "sum-if-not-zero"
   },
-  "alias": "New-Test-1"
+  "alias": "New-Test-1",
+  "title": "New-Test-1"
 }

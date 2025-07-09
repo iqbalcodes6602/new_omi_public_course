@@ -35,5 +35,6 @@
     "Tolerance": 1e-09,
     "GroupScorePolicy": "sum-if-not-zero"
   },
-  "alias": "Contest-Start"
+  "alias": "Contest-Start",
+  "title": "Contest-Start"
 }

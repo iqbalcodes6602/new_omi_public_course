@@ -118,6 +118,7 @@ def download_and_unzip(problem_alias: str, assignment_folder: str):
                 with open(settings_path, "r+", encoding="utf-8") as f:
                     settings = json.load(f)
                     settings["alias"] = problem_alias
+                    settings["title"] = problem_alias
                     f.seek(0)
                     json.dump(settings, f, indent=2, ensure_ascii=False)
                     f.truncate()
