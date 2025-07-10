@@ -6,7 +6,6 @@ import os
 import subprocess
 import tempfile
 import zipfile
-import re
 
 from typing import Any, Mapping, Set
 
@@ -35,7 +34,7 @@ def createProblemZip(problemConfig: Mapping[str, Any], problemPath: str,
         if os.path.isfile(testplan):
             _addFile(testplan)
 
-        if problemConfig['Validator']['Name'] == 'custom':
+        if problemConfig['validator']['name'] == 'custom':
             validators = [
                 x for x in os.listdir(problemPath) if x.startswith('validator')
             ]
@@ -62,15 +61,15 @@ def uploadProblemZip(client: omegaup.api.Client,
                      problemConfig: Mapping[str, Any], canCreate: bool,
                      zipPath: str, commitMessage: str) -> None:
     """Uploads a problem with the given .zip and configuration."""
-    misc = problemConfig.get('misc', {})
-    alias = problemConfig.get('alias', "")
-    limits = problemConfig.get('Limits', {})
-    validator = problemConfig.get('Validator', {})
+    misc = problemConfig['misc']
+    alias = misc['alias']
+    limits = problemConfig['limits']
+    validator = problemConfig['validator']
 
     payload = {
         'message': commitMessage,
         'problem_alias': alias,
-        # 'title': problemConfig['title'],
+        'title': problemConfig['title'],
         # 'source': problemConfig['source'],
         # 'visibility': misc['visibility'],
         # 'languages': misc['languages'],
@@ -86,42 +85,6 @@ def uploadProblemZip(client: omegaup.api.Client,
         # 'group_score_policy': misc.get('group_score_policy',
         #                                'sum-if-not-zero'),
     }
-
-    if misc:
-        if misc['visibility'] is not None:
-            payload['visibility'] = misc['visibility']
-        if misc['languages'] is not None:
-            payload['languages'] = misc['languages']
-        if misc['email_clarifications'] is not None:
-            payload['email_clarifications'] = misc.get('email_clarifications', 0)
-        if misc['group_score_policy'] is not None:
-            payload['group_score_policy'] = misc.get('group_score_policy', 'sum-if-not-zero'),
-
-    if limits:
-        time_limit = limits.get('TimeLimit')
-        if time_limit is not None:
-            payload['time_limit'] = parse_limit_value(time_limit)
-        memory_limit = limits.get('MemoryLimit')
-        if memory_limit is not None:
-            payload['memory_limit'] = parse_limit_value(memory_limit) // 1024
-        input_limit = limits.get('InputLimit')
-        if input_limit is not None:
-            payload['input_limit'] = parse_limit_value(input_limit)
-        output_limit = limits.get('OutputLimit')
-        if output_limit is not None:
-            payload['output_limit'] = parse_limit_value(output_limit)
-        extra_wall_time = limits.get('ExtraWallTime')
-        if extra_wall_time is not None:
-            payload['extra_wall_time'] = parse_limit_value(extra_wall_time)
-        overall_wall_time = limits.get('OverallWallTimeLimit')
-        payload['overall_wall_time_limit'] = (
-            parse_limit_value(overall_wall_time) if overall_wall_time is not None else 0
-        )
-
-    if validator:
-        if validator.get('validator') is None:
-            payload['validator'] = validator.get('Name', 'default')
-
 
     exists = client.problem.details(problem_alias=alias,
                                     check_=False)['status'] == 'ok'
@@ -164,12 +127,11 @@ def uploadProblemZip(client: omegaup.api.Client,
 
     targetAdmins = misc.get('admins', [])
     targetAdminGroups = misc.get('admin-groups', [])
-    allAdmins = None
 
     if targetAdmins or targetAdminGroups:
         allAdmins = client.problem.admins(problem_alias=alias)
 
-    if targetAdmins and allAdmins:
+    if targetAdmins is not None:
         admins = {
             a['username'].lower()
             for a in allAdmins['admins'] if a['role'] == 'admin'
@@ -192,7 +154,7 @@ def uploadProblemZip(client: omegaup.api.Client,
             client.problem.removeAdmin(problem_alias=alias,
                                        usernameOrEmail=admin)
 
-    if targetAdminGroups and allAdmins:
+    if targetAdminGroups is not None:
         adminGroups = {
             a['alias'].lower()
             for a in allAdmins['group_admins'] if a['role'] == 'admin'
@@ -235,30 +197,12 @@ def uploadProblemZip(client: omegaup.api.Client,
                                   public=payload.get('public', False))
 
 
-def parse_limit_value(value):
-    if value is None:
-        return None
-    if isinstance(value, (int, float)):
-        return int(value)
-    if isinstance(value, str):
-        value = value.strip().lower()
-        if value.endswith("ms"):
-            return int(float(value[:-2]))
-        if value.endswith("s"):
-            return int(float(value[:-1]) * 1000)
-        if re.match(r"^\d+(\.\d+)?$", value):
-            # Assume milliseconds if no suffix
-            return int(float(value))
-        raise ValueError(f"Invalid limit value format: {value}")
-    raise TypeError(f"Unsupported type for limit value: {type(value)}")
-
-
 def uploadProblem(client: omegaup.api.Client, problemPath: str,
                   commitMessage: str, canCreate: bool) -> None:
     with open(os.path.join(problemPath, 'settings.json'), 'r') as f:
         problemConfig = json.load(f)
 
-    logging.info('Uploading problem: %s', problemConfig['alias'])
+    logging.info('Uploading problem: %s', problemConfig['title'])
 
     with tempfile.NamedTemporaryFile() as tempFile:
         createProblemZip(problemConfig, problemPath, tempFile.name)
@@ -269,7 +213,7 @@ def uploadProblem(client: omegaup.api.Client, problemPath: str,
                          tempFile.name,
                          commitMessage=commitMessage)
 
-        logging.info('Success uploading %s', problemConfig['alias'])
+        logging.info('Success uploading %s', problemConfig['title'])
 
 
 def _main() -> None:
