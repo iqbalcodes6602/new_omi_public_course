@@ -321,12 +321,11 @@ def _main() -> None:
                         level=logging.DEBUG if args.verbose else logging.INFO)
     logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-    logging.info('argssssssssssargssssssssssargssssssssssargssssssssssargssssssssssargssssssssssargssssssssss %s', args.username, args.password, args.api_token, args.url)
-
     client = omegaup.api.Client(username=args.username,
                                 password=args.password,
                                 api_token=args.api_token,
                                 url=args.url)
+    print("clientclientclientclientclientclientclientclient",client)
 
     if env.get('GITHUB_ACTIONS'):
         commit = env['GITHUB_SHA']
