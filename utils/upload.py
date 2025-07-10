@@ -61,8 +61,8 @@ def uploadProblemZip(client: omegaup.api.Client,
                      problemConfig: Mapping[str, Any], canCreate: bool,
                      zipPath: str, commitMessage: str) -> None:
     """Uploads a problem with the given .zip and configuration."""
-    misc = problemConfig['misc']
-    alias = misc['alias']
+    misc = problemConfig.get('misc', {})
+    alias = problemConfig.get('alias', '')
     # limits = problemConfig['limits']
     # validator = problemConfig['validator']
 
