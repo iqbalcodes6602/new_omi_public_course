@@ -325,7 +325,6 @@ def _main() -> None:
                                 password=args.password,
                                 api_token=args.api_token,
                                 url=args.url)
-    print("clientclientclientclientclientclientclientclient",client)
 
     if env.get('GITHUB_ACTIONS'):
         commit = env['GITHUB_SHA']
