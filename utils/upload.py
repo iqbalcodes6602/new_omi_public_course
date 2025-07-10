@@ -125,16 +125,17 @@ def uploadProblemZip(client: omegaup.api.Client,
 
     # exists = client.problem.details(problem_alias=alias,
     #                                 check_=False)['status'] == 'ok'
-    exists = client.query('/api/problem/details/', {'problem_alias': alias})
+    # exists = client.query('/api/problem/details/', {'problem_alias': alias})
     
 
-    if not exists:
-        if not canCreate:
-            raise Exception("Problem doesn't exist!")
-        logging.info("Problem doesn't exist. Creating problem.")
-        endpoint = '/api/problem/create/'
-    else:
-        endpoint = '/api/problem/update/'
+    # if not exists:
+    #     if not canCreate:
+    #         raise Exception("Problem doesn't exist!")
+    #     logging.info("Problem doesn't exist. Creating problem.")
+    #     endpoint = '/api/problem/create/'
+    # else:
+    #     endpoint = '/api/problem/update/'
+    endpoint = '/api/problem/update/'
 
     languages = payload.get('languages', '')
 
