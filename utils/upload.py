@@ -86,8 +86,7 @@ def uploadProblemZip(client: omegaup.api.Client,
         #                                'sum-if-not-zero'),
     }
 
-    exists = client.problem.details(problem_alias=alias,
-                                    check_=False)['status'] == 'ok'
+    exists = client.query('/api/problem/details/', {'problem_alias': alias})
 
     if not exists:
         if not canCreate:
