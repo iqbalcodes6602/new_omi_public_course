@@ -1,4 +1,7 @@
 {
+  "title": "New-Test-1",
+  "source": "multiplicaciones",
+  "alias": "New-Test-1",
   "Cases": [
     {
       "Cases": [
@@ -26,15 +29,13 @@
     "ExtraWallTime": "0s",
     "MemoryLimit": 33554432,
     "OutputLimit": 10240,
-    "OverallWallTimeLimit": "23ms",
-    "TimeLimit": "1ms"
+    "OverallWallTimeLimit": "23.423s",
+    "TimeLimit": "1s"
   },
   "Slow": false,
   "Validator": {
     "Name": "token-caseless",
-    "Tolerance": 1e-09,
+    "Tolerance": 1e-9,
     "GroupScorePolicy": "sum-if-not-zero"
-  },
-  "alias": "New-Test-1",
-  "title": "New-Test-1"
+  }
 }

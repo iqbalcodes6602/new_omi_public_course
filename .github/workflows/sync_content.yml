@@ -3,6 +3,8 @@ name: Sync Course Content on PR
 on:
   push:
     branches: [sync-course]
+  pull_request:
+    branches: [sync-course]
 
 env:
   OMEGAUP_API_TOKEN: ${{ secrets.OMEGAUP_API_TOKEN }}
@@ -10,7 +12,6 @@ env:
 
 jobs:
   sync-content:
-    if: startsWith(github.event.head_commit.message, 'Merge pull request')
     runs-on: ubuntu-22.04
 
     steps:
