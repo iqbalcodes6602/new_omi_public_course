@@ -1,12 +1,11 @@
 name: Test and Deploy
 
 on:
-  pull_request:
-  # allow manual run
-  workflow_dispatch:
-  # always run on main
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 env:
   OMEGAUPUSER: iqbal6602
