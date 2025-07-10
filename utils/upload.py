@@ -88,13 +88,13 @@ def uploadProblemZip(client: omegaup.api.Client,
     }
 
     if misc:
-        if misc['visibility'] is not None:
+        if misc.get('visibility') is not None:
             payload['visibility'] = misc['visibility']
-        if misc['languages'] is not None:
+        if misc.get('languages') is not None:
             payload['languages'] = misc['languages']
-        if misc['email_clarifications'] is not None:
+        if misc.get('email_clarifications') is not None:
             payload['email_clarifications'] = misc.get('email_clarifications', 0)
-        if misc['group_score_policy'] is not None:
+        if misc.get('group_score_policy') is not None:
             payload['group_score_policy'] = misc.get('group_score_policy', 'sum-if-not-zero'),
 
     if limits:
@@ -122,9 +122,8 @@ def uploadProblemZip(client: omegaup.api.Client,
         if validator.get('validator') is None:
             payload['validator'] = validator.get('Name', 'default')
 
-
-    exists = client.problem.details(problem_alias=alias,
-                                    check_=False)['status'] == 'ok'
+    exists = client.query(
+        '/api/problem/details/',{'problem_alias': alias})['status'] == 'ok'
 
     if not exists:
         if not canCreate:
@@ -161,6 +160,44 @@ def uploadProblemZip(client: omegaup.api.Client,
     files = {'problem_contents': open(zipPath, 'rb')}
 
     client.query(endpoint, payload, files)
+
+    if exists:
+        course_alias = misc.get('course_alias', '')
+        assignment_alias = misc.get('assignment_alias', '')
+
+        if course_alias and assignment_alias:
+            try:
+                details = client.course.assignmentDetails(
+                    course=course_alias,
+                    assignment=assignment_alias
+                )
+
+                versions = client.problem.versions(problem_alias=alias,
+                                                   check_=False)
+                commit = getattr(versions, 'published', '')
+
+                if not commit:
+                    logging.warning("No commit found in versions: %s", versions)
+                    commit = ''
+
+                client.course.addProblem(
+                    course_alias=course_alias,
+                    assignment_alias=assignment_alias,
+                    problem_alias=alias,
+                    commit=commit,
+                    is_extra_problem=getattr(details, 'is_extra_problem', False),
+                    points=getattr(details, 'points', 100.0),
+                    check_=False
+                )
+                logging.info(
+                    "Successfully added problem %s to course %s, assignment %s",
+                    alias, course_alias, assignment_alias)
+
+            except Exception as e:
+                logging.warning("Could not add problem to assignment: %s", e)
+        else:
+            logging.info(
+                "No course information found, problem %s uploaded successfully", alias)
 
     targetAdmins = misc.get('admins', [])
     targetAdminGroups = misc.get('admin-groups', [])
@@ -259,6 +296,19 @@ def uploadProblem(client: omegaup.api.Client, problemPath: str,
         problemConfig = json.load(f)
 
     logging.info('Uploading problem: %s', problemConfig['alias'])
+    path_parts = problemPath.split(os.sep)
+    course_alias = ''
+    assignment_alias = ''
+
+    if len(path_parts) >= 3:
+        assignment_alias = path_parts[-2]
+        course_alias = path_parts[-3]
+
+    if 'misc' not in problemConfig:
+        problemConfig['misc'] = {}
+
+    problemConfig['misc']['course_alias'] = course_alias
+    problemConfig['misc']['assignment_alias'] = assignment_alias
 
     with tempfile.NamedTemporaryFile() as tempFile:
         createProblemZip(problemConfig, problemPath, tempFile.name)
