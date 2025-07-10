@@ -34,19 +34,19 @@ def createProblemZip(problemConfig: Mapping[str, Any], problemPath: str,
         if os.path.isfile(testplan):
             _addFile(testplan)
 
-        if problemConfig['Validator']['name'] == 'custom':
-            validators = [
-                x for x in os.listdir(problemPath) if x.startswith('validator')
-            ]
+        # if problemConfig['Validator']['name'] == 'custom':
+        #     validators = [
+        #         x for x in os.listdir(problemPath) if x.startswith('validator')
+        #     ]
 
-            if not validators:
-                raise Exception('Custom validator missing!')
-            if len(validators) != 1:
-                raise Exception('More than one validator found!')
+        #     if not validators:
+        #         raise Exception('Custom validator missing!')
+        #     if len(validators) != 1:
+        #         raise Exception('More than one validator found!')
 
-            validator = os.path.join(problemPath, validators[0])
+        #     validator = os.path.join(problemPath, validators[0])
 
-            _addFile(validator)
+        #     _addFile(validator)
 
         for directory in ('statements', 'solutions', 'cases'):
             _recursiveAdd(directory)
@@ -127,11 +127,12 @@ def uploadProblemZip(client: omegaup.api.Client,
 
     targetAdmins = misc.get('admins', [])
     targetAdminGroups = misc.get('admin-groups', [])
+    allAdmins = None 
 
     if targetAdmins or targetAdminGroups:
         allAdmins = client.problem.admins(problem_alias=alias)
 
-    if targetAdmins is not None:
+    if targetAdmins and allAdmins:
         admins = {
             a['username'].lower()
             for a in allAdmins['admins'] if a['role'] == 'admin'
@@ -154,7 +155,7 @@ def uploadProblemZip(client: omegaup.api.Client,
             client.problem.removeAdmin(problem_alias=alias,
                                        usernameOrEmail=admin)
 
-    if targetAdminGroups is not None:
+    if targetAdminGroups and allAdmins:
         adminGroups = {
             a['alias'].lower()
             for a in allAdmins['group_admins'] if a['role'] == 'admin'
