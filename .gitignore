@@ -24,3 +24,4 @@ Makefile
 .vscode
 results
 /utils/__pycache__
+/utils/Pipfile.lock
